@@ -164,15 +164,51 @@
                     </div>
                 </div>
 
-                <!-- FAQ Item 5 -->
+                <!-- FAQ Item: What is bcrypt? -->
                 <div class="accordion-item">
                     <button class="accordion-header">
-                        <span>Is this secure?</span>
+                        <span>What is bcrypt?</span>
                         <i class="fa-solid fa-chevron-down"></i>
                     </button>
                     <div class="accordion-content">
-                        <p>Yes. All processing happens <strong>directly in your browser</strong> using JavaScript. Your
-                            text never leaves your device and is never sent to any server.</p>
+                        <p>Bcrypt is a password hashing function designed to be computationally intensive. It's commonly
+                            used for securely storing passwords in databases.</p>
+                    </div>
+                </div>
+
+                <!-- FAQ Item: How many rounds? -->
+                <div class="accordion-item">
+                    <button class="accordion-header">
+                        <span>How many rounds should I use?</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <div class="accordion-content">
+                        <p>12 rounds is the recommended minimum for production use. More rounds increase security but
+                            also processing time. Choose based on your security requirements.</p>
+                    </div>
+                </div>
+
+                <!-- FAQ Item: Is this secure? -->
+                <div class="accordion-item">
+                    <button class="accordion-header">
+                        <span>Is this tool secure?</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <div class="accordion-content">
+                        <p>All processing happens in your browser using the bcryptjs library. No data is sent to any
+                            servers or stored anywhere.</p>
+                    </div>
+                </div>
+
+                <!-- FAQ Item: Production Use -->
+                <div class="accordion-item">
+                    <button class="accordion-header">
+                        <span>Can I use this in production?</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <div class="accordion-content">
+                        <p>This tool is primarily for testing and learning. For production use, implement bcrypt
+                            directly in your application using a trusted library.</p>
                     </div>
                 </div>
             </div>
@@ -184,7 +220,8 @@
             </div>
 
             <footer>
-                <p>&copy; 2026 VJ Bcrypt Generator. Built with privacy in mind.</p>
+                <p>&copy; 2026 VJ Bcrypt Generator. Designed by <a href="https://vjranga.com" target="_blank"
+                        style="color: inherit; text-decoration: underline;">vjranga.com</a>.</p>
             </footer>
         </section>
     </main>
