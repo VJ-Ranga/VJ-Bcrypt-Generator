@@ -354,56 +354,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                         const computed = CryptoJS.SHA512(password).toString();
                         resolve(computed.toLowerCase() === hash.toLowerCase());
-                    } else if (currentVerifyAlgo === 'argon2id') {
-                        if (typeof argon2 === 'undefined') throw new Error("Argon2 library not loaded");
-                        // Argon2id verify
-                        argon2.verify({ pass: password, hash: hash })
-                            .then(() => resolve(true))
-                            .catch((e) => {
-                                if (e.message.includes('not match')) {
-                                    resolve(false);
-                                } else {
-                                    reject(e);
-                                }
-                            });
-                        return; // Async handled
-                    } else if (currentVerifyAlgo === 'scrypt') {
-                        if (typeof scrypt === 'undefined') throw new Error("Scrypt library not loaded");
-                        // Format: scrypt$N$r$p$saltHex$hashHex
-                        const parts = hash.split('$');
-                        if (parts.length !== 6 || parts[0] !== 'scrypt') {
-                            throw new Error('Invalid Scrypt hash format. Expected scrypt$N$r$p$salt$hash');
-                        }
-                        const N = parseInt(parts[1]);
-                        const r = parseInt(parts[2]);
-                        const p = parseInt(parts[3]);
-                        const salt = new Uint8Array(parts[4].match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
-                        const hashHex = parts[5];
-
-                        scrypt.scrypt(new TextEncoder().encode(password), salt, N, r, p, 64)
-                            .then(derivedKey => {
-                                const computedHex = bufferToHex(derivedKey);
-                                resolve(computedHex === hashHex);
-                            })
-                            .catch(reject);
-                        return; // Async handled
-                    } else if (currentVerifyAlgo === 'pbkdf2') {
-                        if (typeof CryptoJS === 'undefined') throw new Error("CryptoJS library not loaded");
-                        // Format: pbkdf2$iterations$salt$hash
-                        const parts = hash.split('$');
-                        if (parts.length !== 4 || parts[0] !== 'pbkdf2') {
-                            throw new Error('Invalid PBKDF2 hash format. Expected pbkdf2$iterations$salt$hash');
-                        }
-                        const iterations = parseInt(parts[1]);
-                        const salt = CryptoJS.enc.Hex.parse(parts[2]);
-                        const hashHex = parts[3];
-                        const keySize = (hashHex.length * 4) / 32;
-
-                        const derivedKey = CryptoJS.PBKDF2(password, salt, {
-                            keySize: keySize,
-                            iterations: iterations
-                        });
-                        resolve(derivedKey.toString() === hashHex);
                     } else {
                         reject(new Error('Unsupported verification algorithm'));
                     }
