@@ -159,24 +159,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- Accordion Logic ---
-    const accordions = document.querySelectorAll('.accordion-header');
-
-    accordions.forEach(acc => {
-        acc.addEventListener('click', () => {
-            // Toggle active class
-            acc.classList.toggle('active');
-
-            // Toggle panel
-            const panel = acc.nextElementSibling;
-            if (panel.style.maxHeight) {
-                panel.style.maxHeight = null;
-            } else {
-                panel.style.maxHeight = panel.scrollHeight + "px";
-            }
-        });
-    });
-
     // --- Utils ---
 
     function showStatus(element, msg, type) {

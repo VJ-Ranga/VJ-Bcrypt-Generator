@@ -17,7 +17,7 @@ This started as a fun, personal project because I needed a quick way to generate
 ## Usage
 1.  Open `index.html` or visit the live site.
 2.  **Generate**: Type text, select an algorithm, and click "Encrypt".
-3.  **Verify**: Switch to the verify tab, paste a hash and the text to check if they match.
+3.  **Verify**: Switch to the verify tab, paste a hash and the text to check if they match.1
 
 ## License
 Free to use and share!

@@ -310,7 +310,7 @@ input[type="range"]::-webkit-slider-thumb {
     }
 }
 
-/* FAQ Accordion Section */
+/* FAQ Grid Section */
 .faq-container {
     width: 100%;
 }
@@ -323,73 +323,37 @@ input[type="range"]::-webkit-slider-thumb {
     padding-left: 16px;
 }
 
-/* Accordion */
-.accordion-item {
+.faq-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    /* Force 2 columns on desktop */
+    gap: 20px;
+}
+
+.faq-item {
     background: var(--card-bg);
     border: 1px solid var(--card-border);
     border-radius: 12px;
-    margin-bottom: 12px;
-    overflow: hidden;
+    padding: 24px;
+    transition: transform 0.2s ease, border-color 0.2s;
 }
 
-.accordion-header {
-    width: 100%;
-    padding: 20px;
-    background: transparent;
-    border: none;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    cursor: pointer;
-    text-align: left;
+.faq-item:hover {
+    transform: translateY(-2px);
+    border-color: #333;
 }
 
-.accordion-header span {
-    font-family: var(--font-body);
+.faq-item h3 {
     font-size: 1rem;
-    font-weight: 600;
+    margin-bottom: 12px;
     color: var(--text-primary);
+    font-weight: 600;
 }
 
-.accordion-header i {
+.faq-item p {
+    font-size: 0.9rem;
     color: var(--text-secondary);
-    transition: transform 0.3s ease;
-}
-
-.accordion-header.active i {
-    transform: rotate(180deg);
-}
-
-.accordion-content {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease;
-    background: rgba(255, 255, 255, 0.02);
-}
-
-.accordion-content p {
-    padding: 20px;
-    margin: 0;
-    color: var(--text-secondary);
-    font-size: 0.95rem;
     line-height: 1.6;
-    border-top: 1px solid var(--card-border);
-}
-
-.accordion-content .status-success {
-    color: #10b981;
-    margin-bottom: 8px;
-    display: block;
-    padding-bottom: 0;
-    border-bottom: none;
-}
-
-.accordion-content .status-error {
-    color: #fb7185;
-    margin-bottom: 8px;
-    display: block;
-    padding-bottom: 0;
-    border-bottom: none;
 }
 
 /* Ad Container */
@@ -419,5 +383,10 @@ footer {
 
     header h1 {
         font-size: 1.75rem;
+    }
+
+    /* Mobile: Stack FAQ columns */
+    .faq-grid {
+        grid-template-columns: 1fr;
     }
 }
