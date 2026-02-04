@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VJ Bcrypt Generator | Premium Hash Generator</title>
+    <!-- Google Fonts: Inter & Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;700;800&display=swap"
+        rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Dependencies -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bcryptjs/2.4.3/bcrypt.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+</head>
+
+<body>
+    <main class="container">
+        <div class="glass-card">
+            <header>
+                <h1>VJ Bcrypt Generator</h1>
+                <p>A simple, powerful tool to generate and verify hashes. Supports Bcrypt, MD5, SHA-256, and more.</p>
+            </header>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="generate">Generate</button>
+                <button class="tab-btn" data-tab="verify">Verify</button>
+            </div>
+
+            <!-- Generate Section -->
+            <div id="generateSection" class="content-section">
+                <div class="input-group">
+                    <label for="passwordInput">Text to Hash</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="passwordInput" placeholder="Enter text to hash..." autocomplete="off">
+                    </div>
+                </div>
+
+                <div class="options-group">
+                    <label>Encryption Method</label>
+                    <div class="chips-container" id="algoSelector">
+                        <button class="chip active" data-algo="bcrypt">Bcrypt</button>
+                        <button class="chip" data-algo="md5">MD5</button>
+                        <button class="chip" data-algo="sha1">SHA1</button>
+                        <button class="chip" data-algo="sha256">SHA256</button>
+                        <button class="chip" data-algo="sha512">SHA512</button>
+                    </div>
+                </div>
+
+                <div class="bcrypt-options" id="bcryptOptions">
+                    <label for="rounds" title="Work factor (4-31)">Rounds (Cost): <span
+                            id="roundsValue">10</span></label>
+                    <input type="range" id="rounds" min="4" max="15" value="10" step="1">
+                </div>
+
+                <button id="generateBtn" class="primary-btn">
+                    <i class="fa-solid fa-lock"></i> Encrypt Now
+                </button>
+
+                <div class="output-group hidden" id="outputGroup">
+                    <label>Generated Hash</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="hashOutput" readonly placeholder="Hash will appear here...">
+                        <button id="copyBtn" class="icon-btn" title="Copy to Clipboard">
+                            <i class="fa-regular fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="status-msg" id="statusMsg"></div>
+                </div>
+            </div>
+
+            <!-- Verify Section -->
+            <div id="verifySection" class="content-section hidden">
+                <div class="input-group">
+                    <label for="verifyHashInput">Hash to Check</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="verifyHashInput" placeholder="Paste the hash here..." autocomplete="off">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="verifyPasswordInput">Text to Check</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="verifyPasswordInput" placeholder="Enter text to check..."
+                            autocomplete="off">
+                    </div>
+                </div>
+
+                <button id="verifyBtn" class="primary-btn">
+                    <i class="fa-solid fa-check"></i> Verify Match
+                </button>
+
+                <div class="status-msg" id="verifyStatusMsg"></div>
+            </div>
+        </div>
+
+        <!-- FAQ Section -->
+        <section class="faq-container">
+            <h2>FAQ & Algorithm Guide</h2>
+            <div class="faq-accordion">
+                <!-- FAQ Item 1 -->
+                <div class="accordion-item">
+                    <button class="accordion-header">
+                        <span>Which encryption method should I use?</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <div class="accordion-content">
+                        <p><strong>Bcrypt</strong> is the best choice for passwords. It is designed to be slow, which
+                            protects against brute-force attacks. For general file checking or data integrity, use
+                            <strong>SHA-256</strong>.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- FAQ Item 2 -->
+                <div class="accordion-item">
+                    <button class="accordion-header">
+                        <span>Bcrypt (Recommended)</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <div class="accordion-content">
+                        <p class="status-success"><i class="fa-solid fa-check-circle"></i> <strong>Good for:</strong>
+                            User Passwords</p>
+                        <p>Bcrypt is the industry standard for password hashing. It uses a "work factor" (rounds) to
+                            make hashing slow, preventing hackers from guessing billions of passwords per second.</p>
+                    </div>
+                </div>
+
+                <!-- FAQ Item 3 -->
+                <div class="accordion-item">
+                    <button class="accordion-header">
+                        <span>MD5 & SHA-1</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <div class="accordion-content">
+                        <p class="status-error"><i class="fa-solid fa-triangle-exclamation"></i>
+                            <strong>Status:</strong> Broken / Insecure
+                        </p>
+                        <p>These are old algorithms. They are extremely fast, which is <strong>bad for
+                                passwords</strong> because hackers can crack them instantly. Only use them for checking
+                            if two files are identical (checksums).</p>
+                    </div>
+                </div>
+
+                <!-- FAQ Item 4 -->
+                <div class="accordion-item">
+                    <button class="accordion-header">
+                        <span>SHA-256 & SHA-512</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <div class="accordion-content">
+                        <p class="status-success"><i class="fa-solid fa-check-circle"></i> <strong>Good for:</strong>
+                            Data Integrity / Digital Signatures</p>
+                        <p>These are secure standard algorithms but are designed to be <strong>fast</strong>. While
+                            better than MD5, they are still not ideal for passwords unless used with a salt and many
+                            iterations. For passwords, stick to Bcrypt.</p>
+                    </div>
+                </div>
+
+                <!-- FAQ Item 5 -->
+                <div class="accordion-item">
+                    <button class="accordion-header">
+                        <span>Is this secure?</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <div class="accordion-content">
+                        <p>Yes. All processing happens <strong>directly in your browser</strong> using JavaScript. Your
+                            text never leaves your device and is never sent to any server.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ad Space (Bottom) -->
+            <div class="ad-container">
+                <!-- Google Ad Placeholder -->
+                <!-- <ins class="adsbygoogle" ... ></ins> -->
+            </div>
+
+            <footer>
+                <p>&copy; 2026 VJ Bcrypt Generator. Built with privacy in mind.</p>
+            </footer>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
