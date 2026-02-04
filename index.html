@@ -18,6 +18,10 @@
     <!-- Dependencies -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bcryptjs/2.4.3/bcrypt.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <!-- Argon2 Browser (Bundled version for easier global access) -->
+    <script src="https://cdn.jsdelivr.net/npm/argon2-browser/dist/argon2-bundled.min.js"></script>
+    <!-- Scrypt JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/scrypt-js/3.0.1/scrypt.min.js"></script>
     <!-- Google AdSense Code -->
     <!-- Paste your AdSense script here. It usually looks like:
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
@@ -29,7 +33,8 @@
         <div class="glass-card">
             <header>
                 <h1>VJ Bcrypt Generator</h1>
-                <p>A simple, powerful tool to generate and verify hashes. Supports Bcrypt, MD5, SHA-256, and more.</p>
+                <p>A simple, powerful tool to generate and verify hashes. Supports Bcrypt, Argon2id, PBKDF2, Scrypt, and
+                    more.</p>
             </header>
 
             <!-- Tabs -->
@@ -43,7 +48,8 @@
                 <div class="input-group">
                     <label for="passwordInput">Text to Hash</label>
                     <div class="input-wrapper">
-                        <input type="text" id="passwordInput" placeholder="Enter text to hash..." autocomplete="off">
+                        <input type="text" id="passwordInput" placeholder="Enter text to hash..." autocomplete="off"
+                            maxlength="128">
                     </div>
                 </div>
 
@@ -51,6 +57,9 @@
                     <label>Encryption Method</label>
                     <div class="chips-container" id="algoSelector">
                         <button class="chip active" data-algo="bcrypt">Bcrypt</button>
+                        <button class="chip" data-algo="argon2id">Argon2id</button>
+                        <button class="chip" data-algo="scrypt">Scrypt</button>
+                        <button class="chip" data-algo="pbkdf2">PBKDF2</button>
                         <button class="chip" data-algo="md5">MD5</button>
                         <button class="chip" data-algo="sha1">SHA1</button>
                         <button class="chip" data-algo="sha256">SHA256</button>
@@ -62,6 +71,58 @@
                     <label for="rounds" title="Work factor (4-31)">Rounds (Cost): <span
                             id="roundsValue">10</span></label>
                     <input type="range" id="rounds" min="4" max="15" value="10" step="1">
+                </div>
+
+                <div class="argon2-options hidden" id="argon2Options">
+                    <div class="option-row">
+                        <label for="argon2Memory" title="Memory usage in KiB">Memory (KiB): <span
+                                id="argon2MemoryValue">65536</span></label>
+                        <input type="range" id="argon2Memory" min="4096" max="65536" value="65536" step="1024">
+                    </div>
+                    <div class="option-row" style="margin-top: 10px;">
+                        <label for="argon2Iterations" title="Number of iterations">Iterations (Time Cost)</label>
+                        <select id="argon2Iterations"
+                            style="width: 100%; padding: 8px; background: #333; color: white; border: 1px solid #444; border-radius: 6px;">
+                            <option value="1">1 (Light)</option>
+                            <option value="3" selected>3 (Recommended)</option>
+                            <option value="5">5 (High)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="scrypt-options hidden" id="scryptOptions">
+                    <div class="option-row">
+                        <label for="scryptCost" title="CPU/Memory cost (N)">Cost (N): <span
+                                id="scryptCostValue">16384</span></label>
+                        <input type="range" id="scryptCost" min="1024" max="32768" value="16384" step="1024">
+                    </div>
+                    <div class="option-row" style="margin-top: 10px;">
+                        <label for="scryptBlockSize" title="Block size (r)">Block Size (r): 8</label>
+                        <input type="hidden" id="scryptBlockSize" value="8">
+                    </div>
+                </div>
+
+                <div class="pbkdf2-options hidden" id="pbkdf2Options">
+                    <div class="option-row">
+                        <label for="pbkdf2Iterations" title="Number of iterations">Iterations: <span
+                                id="pbkdf2IterationsValue">10000</span></label>
+                        <select id="pbkdf2Iterations"
+                            style="width: 100%; padding: 8px; background: #333; color: white; border: 1px solid #444; border-radius: 6px;">
+                            <option value="1000">1000 (Low)</option>
+                            <option value="10000" selected>10,000 (Medium)</option>
+                            <option value="100000">100,000 (High)</option>
+                        </select>
+                    </div>
+                    <div class="option-row" style="margin-top: 10px;">
+                        <label for="pbkdf2KeySize" title="Key size in bits">Key Size: <span
+                                id="pbkdf2KeySizeValue">256</span> bits</label>
+                        <select id="pbkdf2KeySize"
+                            style="width: 100%; padding: 8px; background: #333; color: white; border: 1px solid #444; border-radius: 6px;">
+                            <option value="128">128 bits</option>
+                            <option value="256" selected>256 bits</option>
+                            <option value="512">512 bits</option>
+                        </select>
+                    </div>
                 </div>
 
                 <button id="generateBtn" class="primary-btn">

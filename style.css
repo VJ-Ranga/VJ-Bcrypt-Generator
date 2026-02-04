@@ -215,6 +215,32 @@ input[type="password"]:focus {
     display: none;
 }
 
+.argon2-options {
+    margin-bottom: 24px;
+    padding: 20px;
+    background: var(--bg-dark);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+}
+
+.argon2-options.hidden {
+    display: none;
+}
+
+.scrypt-options,
+.pbkdf2-options {
+    margin-bottom: 24px;
+    padding: 20px;
+    background: var(--bg-dark);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+}
+
+.scrypt-options.hidden,
+.pbkdf2-options.hidden {
+    display: none;
+}
+
 input[type="range"] {
     width: 100%;
     height: 4px;
