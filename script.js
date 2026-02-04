@@ -154,7 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         argon2Lib.hash({
                             pass: password,
                             salt: salt,
-                            type: argon2Lib.Argon2id,
+                            type: argon2Lib.ArgonType.Argon2id,
                             mem: parseInt(argon2MemoryInput.value),
                             time: parseInt(argon2IterationsSelect.value),
                             parallelism: 1,
@@ -254,6 +254,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const verifyBtn = document.getElementById('verifyBtn');
     const verifyStatusMsg = document.getElementById('verifyStatusMsg');
 
+    // Verify Algorithm Selection
+    const verifyAlgoSelector = document.getElementById('verifyAlgoSelector');
+    let currentVerifyAlgo = 'bcrypt';
+
+    verifyAlgoSelector.addEventListener('click', (e) => {
+        const chip = e.target.closest('.chip');
+        if (!chip) return;
+
+        // UI Update
+        document.querySelectorAll('#verifyAlgoSelector .chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+
+        // Logic Update
+        currentVerifyAlgo = chip.dataset.algo;
+    });
+
     verifyBtn.addEventListener('click', () => {
         const hash = verifyHashInput.value.trim();
         const password = verifyPasswordInput.value;
@@ -269,46 +285,49 @@ document.addEventListener('DOMContentLoaded', () => {
         new Promise((resolve, reject) => {
             setTimeout(() => {
                 try {
-                    // Argon2id Check
-                    if (hash.startsWith('$argon2id$')) {
-                        const argon2Lib = window.argon2;
-                        if (!argon2Lib) throw new Error("Argon2 library not loaded");
-                        argon2Lib.verify({ pass: password, encoded: hash })
-                            .then(isMatch => resolve(isMatch))
-                            .catch(err => {
-                                console.error("Argon2 verify error", err);
-                                resolve(false);
-                            });
-                    }
-                    // Bcrypt Check
-                    else if (hash.startsWith('$2a$') || hash.startsWith('$2b$') || hash.startsWith('$2y$')) {
+                    // Strict format checking based on selected algorithm
+                    if (currentVerifyAlgo === 'bcrypt') {
+                        // Bcrypt Check - must start with $2
+                        if (!hash.startsWith('$2a$') && !hash.startsWith('$2b$') && !hash.startsWith('$2y$')) {
+                            reject(new Error('Invalid Bcrypt hash format. Expected hash starting with $2a$, $2b$, or $2y$'));
+                            return;
+                        }
                         const isMatch = dcodeIO.bcrypt.compareSync(password, hash);
                         resolve(isMatch);
-                    }
-                    // Simple Hash Check (MD5, SHA, PBKDF2/Scrypt Hex)
-                    else {
-                        // For Hex outputs (Scrypt, PBKDF2, MD5, SHA), we just regenerate and compare string equality.
-                        // NOTE: PBKDF2 and Scrypt in this simple tool use random salts per generation, 
-                        // so we CANNOT verifying them just by regenerating unless we parse the salt from the hash string (which we aren't doing for hex output).
-                        // However, for MD5/SHA (unsalted in this tool), it works.
-                        // For this basic tool, I will only support simple equality for the unsalted algo outputs.
-
-                        const candidates = [
-                            CryptoJS.MD5(password).toString(),
-                            CryptoJS.SHA1(password).toString(),
-                            CryptoJS.SHA256(password).toString(),
-                            CryptoJS.SHA512(password).toString()
-                        ];
-
-                        // NOTE: Verification for randomized Scrypt/PBKDF2 is logically impossible 
-                        // without storing salt in the output string format. 
-                        // Since I output simple Hex for them, I cannot verify them here easily. 
-                        // I will skip them or checking strict equality if user pastes exact same output (unlikely for random salt).
-
-                        resolve(candidates.includes(hash.toLowerCase()) || hash === hash); // Fallback to "if it matches exactly" logic? No that's trivial.
-
-                        // Strict check for standard algos
-                        resolve(candidates.includes(hash.toLowerCase()));
+                    } else if (currentVerifyAlgo === 'md5') {
+                        // MD5 - 32 hex chars
+                        if (!/^[a-f0-9]{32}$/i.test(hash)) {
+                            reject(new Error('Invalid MD5 hash format. Expected 32 hexadecimal characters'));
+                            return;
+                        }
+                        const computed = CryptoJS.MD5(password).toString();
+                        resolve(computed.toLowerCase() === hash.toLowerCase());
+                    } else if (currentVerifyAlgo === 'sha1') {
+                        // SHA1 - 40 hex chars
+                        if (!/^[a-f0-9]{40}$/i.test(hash)) {
+                            reject(new Error('Invalid SHA1 hash format. Expected 40 hexadecimal characters'));
+                            return;
+                        }
+                        const computed = CryptoJS.SHA1(password).toString();
+                        resolve(computed.toLowerCase() === hash.toLowerCase());
+                    } else if (currentVerifyAlgo === 'sha256') {
+                        // SHA256 - 64 hex chars
+                        if (!/^[a-f0-9]{64}$/i.test(hash)) {
+                            reject(new Error('Invalid SHA256 hash format. Expected 64 hexadecimal characters'));
+                            return;
+                        }
+                        const computed = CryptoJS.SHA256(password).toString();
+                        resolve(computed.toLowerCase() === hash.toLowerCase());
+                    } else if (currentVerifyAlgo === 'sha512') {
+                        // SHA512 - 128 hex chars
+                        if (!/^[a-f0-9]{128}$/i.test(hash)) {
+                            reject(new Error('Invalid SHA512 hash format. Expected 128 hexadecimal characters'));
+                            return;
+                        }
+                        const computed = CryptoJS.SHA512(password).toString();
+                        resolve(computed.toLowerCase() === hash.toLowerCase());
+                    } else {
+                        reject(new Error('Unsupported verification algorithm'));
                     }
                 } catch (err) {
                     reject(err);
