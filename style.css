@@ -404,13 +404,17 @@ input[type="range"]::-webkit-slider-thumb {
 /* Ad Container */
 .ad-container {
     width: 100%;
-    margin-top: 40px;
-    margin-bottom: 20px;
-    min-height: 0;
-    /* Collapses if empty */
+    max-width: 728px;
+    /* Standard Leaderboard width */
+    height: 90px;
+    /* Standard Leaderboard height */
+    margin: 40px auto 20px auto;
     display: flex;
     justify-content: center;
     align-items: center;
+    background: rgba(255, 255, 255, 0.03);
+    /* Subtle placeholder bg */
+    border-radius: 8px;
     overflow: hidden;
 }
 
