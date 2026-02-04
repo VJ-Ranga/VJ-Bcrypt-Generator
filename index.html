@@ -154,6 +154,9 @@
                     <label>Encryption Method</label>
                     <div class="chips-container" id="verifyAlgoSelector">
                         <button class="chip active" data-algo="bcrypt">Bcrypt</button>
+                        <button class="chip" data-algo="argon2id">Argon2id</button>
+                        <button class="chip" data-algo="scrypt">Scrypt</button>
+                        <button class="chip" data-algo="pbkdf2">PBKDF2</button>
                         <button class="chip" data-algo="md5">MD5</button>
                         <button class="chip" data-algo="sha1">SHA1</button>
                         <button class="chip" data-algo="sha256">SHA256</button>
@@ -189,11 +192,11 @@
             <div class="faq-accordion">
                 <!-- FAQ Item: What is this? -->
                 <div class="accordion-item">
-                    <button class="accordion-header">
+                    <button class="accordion-header" aria-expanded="false" aria-controls="faq1" role="button">
                         <span>What is VJ Bcrypt Generator?</span>
                         <i class="fa-solid fa-chevron-down"></i>
                     </button>
-                    <div class="accordion-content">
+                    <div id="faq1" class="accordion-content" role="region">
                         <p>It is a secure, client-side tool to generate and verify password hashes. Because it runs in
                             your browser, your data never leaves your device.</p>
                     </div>
@@ -201,11 +204,11 @@
 
                 <!-- FAQ Item: Which method to use? -->
                 <div class="accordion-item">
-                    <button class="accordion-header">
+                    <button class="accordion-header" aria-expanded="false" aria-controls="faq2" role="button">
                         <span>Which encryption method should I use?</span>
                         <i class="fa-solid fa-chevron-down"></i>
                     </button>
-                    <div class="accordion-content">
+                    <div id="faq2" class="accordion-content" role="region">
                         <p><strong>Bcrypt</strong> is the best for passwords because it is slow and hard to crack.
                             <strong>SHA-256</strong> is good for checking file integrity.
                         </p>
@@ -214,11 +217,11 @@
 
                 <!-- FAQ Item: What is Bcrypt? -->
                 <div class="accordion-item">
-                    <button class="accordion-header">
+                    <button class="accordion-header" aria-expanded="false" aria-controls="faq3" role="button">
                         <span>What is Bcrypt?</span>
                         <i class="fa-solid fa-chevron-down"></i>
                     </button>
-                    <div class="accordion-content">
+                    <div id="faq3" class="accordion-content" role="region">
                         <p class="status-success"><i class="fa-solid fa-check-circle"></i> <strong>Recommended for
                                 Passwords</strong></p>
                         <p>Bcrypt is a password hashing function designed to be computationally intensive. It uses a
@@ -228,11 +231,11 @@
 
                 <!-- FAQ Item: Rounds -->
                 <div class="accordion-item">
-                    <button class="accordion-header">
+                    <button class="accordion-header" aria-expanded="false" aria-controls="faq4" role="button">
                         <span>How many rounds should I use?</span>
                         <i class="fa-solid fa-chevron-down"></i>
                     </button>
-                    <div class="accordion-content">
+                    <div id="faq4" class="accordion-content" role="region">
                         <p><strong>12 rounds</strong> is the recommended minimum for production. The higher the number,
                             the more secure it is, but it will take longer to generate.</p>
                     </div>
@@ -240,11 +243,11 @@
 
                 <!-- FAQ Item: Insecure Algos -->
                 <div class="accordion-item">
-                    <button class="accordion-header">
+                    <button class="accordion-header" aria-expanded="false" aria-controls="faq5" role="button">
                         <span>Are MD5 and SHA-1 secure?</span>
                         <i class="fa-solid fa-chevron-down"></i>
                     </button>
-                    <div class="accordion-content">
+                    <div id="faq5" class="accordion-content" role="region">
                         <p class="status-error"><i class="fa-solid fa-triangle-exclamation"></i> <strong>Broken /
                                 Insecure</strong></p>
                         <p>No. They are too fast and can be cracked easily. Do not use them for passwords. Only use them
@@ -254,11 +257,11 @@
 
                 <!-- FAQ Item: Production Use -->
                 <div class="accordion-item">
-                    <button class="accordion-header">
+                    <button class="accordion-header" aria-expanded="false" aria-controls="faq6" role="button">
                         <span>Can I use this in production?</span>
                         <i class="fa-solid fa-chevron-down"></i>
                     </button>
-                    <div class="accordion-content">
+                    <div id="faq6" class="accordion-content" role="region">
                         <p>This tool is excellent for testing, learning, and manual generation. For your own app, you
                             should use a trusted library to implement Bcrypt directly in your backend.</p>
                     </div>

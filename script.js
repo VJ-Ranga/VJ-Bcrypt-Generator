@@ -106,16 +106,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Rate Limiting
     let lastGenerateTime = 0;
-    const COOLDOWN_MS = 1000;
+    const COOLDOWN_MS = 500;
+    let generateController = null;
+
+    // Helper to get hex from Uint8Array
+    function bufferToHex(buffer) {
+        return Array.from(new Uint8Array(buffer))
+            .map(b => b.toString(16).padStart(2, '0'))
+            .join('');
+    }
 
     // Generate Hash
     generateBtn.addEventListener('click', () => {
-        const password = passwordInput.value;
-        if (!password) {
-            showStatus(statusMsg, 'Please enter text to hash', 'error');
-            return;
-        }
-
         // Rate Limit Check
         const now = Date.now();
         if (now - lastGenerateTime < COOLDOWN_MS) {
@@ -124,32 +126,36 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         lastGenerateTime = now;
 
-        // Warnings
-        if (password.length > 128) {
-            showStatus(statusMsg, 'Warning: Password clipped to 128 chars', 'error');
-            // actually input maxlength handles this, but good for paste checking if we wanted to be strict
-        }
-        if (currentAlgo === 'bcrypt' && new TextEncoder().encode(password).length > 72) {
-            showStatus(statusMsg, 'Note: Bcrypt truncates to 72 bytes', 'error');
-            // Allow proceed, but warn
-        }
-
-
-        // Prevent spamming
-        setLoading(generateBtn, true);
         outputGroup.classList.remove('visible'); // Reset animation
 
+        // Input Sanitization
+        const password = passwordInput.value.trim();
+        if (password !== passwordInput.value) {
+            passwordInput.value = password;
+        }
+
+        if (!password) {
+            showStatus(statusMsg, 'Please enter text to hash', 'error');
+            return;
+        }
+
         // Use a Promise to handle both Sync and Async algorithms
+        const currentGenerationId = Date.now();
+        this.lastGenerationId = currentGenerationId;
+
         new Promise((resolve, reject) => {
             // Small delay for UI "heaviness"
             setTimeout(() => {
+                // Check if this generation is still relevant
+                if (this.lastGenerationId !== currentGenerationId) return;
+
                 try {
                     if (currentAlgo === 'argon2id') {
                         // Argon2id is Async
+                        if (typeof argon2 === 'undefined') throw new Error("Argon2 library not loaded");
+
                         const salt = window.crypto.getRandomValues(new Uint8Array(16));
-                        // Ensure window.argon2 is available (fix for "argon2 is not defined")
-                        const argon2Lib = window.argon2;
-                        if (!argon2Lib) throw new Error("Argon2 library not loaded");
+                        const argon2Lib = argon2;
 
                         argon2Lib.hash({
                             pass: password,
@@ -165,6 +171,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     } else if (currentAlgo === 'scrypt') {
                         // Scrypt is Async
+                        if (typeof scrypt === 'undefined') throw new Error("Scrypt library not loaded");
+
                         const passwordBuffer = new TextEncoder().encode(password);
                         const salt = window.crypto.getRandomValues(new Uint8Array(16));
                         const N = parseInt(scryptCostInput.value);
@@ -174,17 +182,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
                         scrypt.scrypt(passwordBuffer, salt, N, r, p, dkLen)
                             .then(derivedKey => {
-                                // Scrypt-js returns raw bytes (Uint8Array). We need to format it strictly.
-                                // There isn't a standard "modular crypt format" for scrypt in widespread use like bcrypt/argon2 strings.
-                                // Common convention: N$r$p$salt_hex$hash_hex or just hex(hash).
-                                // For this tool, let's output a hex string of the derived key to keep it simple and verifiable.
-                                const hex = Array.from(derivedKey).map(b => b.toString(16).padStart(2, '0')).join('');
-                                resolve(hex);
+                                // Format: scrypt$N$r$p$salt$hash
+                                const saltHex = bufferToHex(salt);
+                                const hashHex = bufferToHex(derivedKey);
+                                resolve(`scrypt$${N}$${r}$${p}$${saltHex}$${hashHex}`);
                             })
                             .catch(reject);
 
                     } else if (currentAlgo === 'pbkdf2') {
                         // PBKDF2 (CryptoJS)
+                        if (typeof CryptoJS === 'undefined') throw new Error("CryptoJS library not loaded");
+
                         const salt = CryptoJS.lib.WordArray.random(128 / 8);
                         const iterations = parseInt(pbkdf2IterationsSelect.value);
                         const keySize = parseInt(pbkdf2KeySizeSelect.value) / 32; // CryptoJS keySize is in 32-bit words
@@ -193,28 +201,36 @@ document.addEventListener('DOMContentLoaded', () => {
                             keySize: keySize,
                             iterations: iterations
                         });
-                        // Standard output: salt + hash? Or just hash? 
-                        // Let's output the Hex string of the derived key.
-                        resolve(derivedKey.toString(CryptoJS.enc.Hex));
+
+                        // Format: pbkdf2$iterations$salt$hash
+                        resolve(`pbkdf2$${iterations}$${salt.toString()}$${derivedKey.toString()}`);
 
                     } else {
                         // Sync Algorithms
                         let hash = '';
+                        // Check for bcrypt specifically (might be dcodeIO.bcrypt or just bcrypt)
+                        const bcryptLib = (typeof dcodeIO !== 'undefined' && dcodeIO.bcrypt) || (typeof bcrypt !== 'undefined' ? bcrypt : null);
+
                         switch (currentAlgo) {
                             case 'bcrypt':
-                                const salt = dcodeIO.bcrypt.genSaltSync(parseInt(roundsInput.value));
-                                hash = dcodeIO.bcrypt.hashSync(password, salt);
+                                if (!bcryptLib) throw new Error("Bcrypt library not loaded");
+                                const salt = bcryptLib.genSaltSync(parseInt(roundsInput.value));
+                                hash = bcryptLib.hashSync(password, salt);
                                 break;
                             case 'md5':
+                                if (typeof CryptoJS === 'undefined') throw new Error("CryptoJS library not loaded");
                                 hash = CryptoJS.MD5(password).toString();
                                 break;
                             case 'sha1':
+                                if (typeof CryptoJS === 'undefined') throw new Error("CryptoJS library not loaded");
                                 hash = CryptoJS.SHA1(password).toString();
                                 break;
                             case 'sha256':
+                                if (typeof CryptoJS === 'undefined') throw new Error("CryptoJS library not loaded");
                                 hash = CryptoJS.SHA256(password).toString();
                                 break;
                             case 'sha512':
+                                if (typeof CryptoJS === 'undefined') throw new Error("CryptoJS library not loaded");
                                 hash = CryptoJS.SHA512(password).toString();
                                 break;
                         }
@@ -226,6 +242,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 300);
         })
             .then(hash => {
+                // Final check before updating DOM
+                if (this.lastGenerationId !== currentGenerationId) return;
                 hashOutput.value = hash;
                 outputGroup.classList.remove('hidden');
                 void outputGroup.offsetWidth; // Force Reflow
@@ -243,8 +261,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Copy to Clipboard
     copyBtn.addEventListener('click', () => {
-        if (!hashOutput.value) return;
+        if (!hashOutput.value) {
+            showStatus(statusMsg, 'Nothing to copy!', 'error');
+            return;
+        }
         copyToClipboard(hashOutput.value, statusMsg);
+    });
+
+    // Enter Key Support
+    passwordInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            generateBtn.click();
+        }
     });
 
     // --- Verify Section ---
@@ -326,6 +354,56 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                         const computed = CryptoJS.SHA512(password).toString();
                         resolve(computed.toLowerCase() === hash.toLowerCase());
+                    } else if (currentVerifyAlgo === 'argon2id') {
+                        if (typeof argon2 === 'undefined') throw new Error("Argon2 library not loaded");
+                        // Argon2id verify
+                        argon2.verify({ pass: password, hash: hash })
+                            .then(() => resolve(true))
+                            .catch((e) => {
+                                if (e.message.includes('not match')) {
+                                    resolve(false);
+                                } else {
+                                    reject(e);
+                                }
+                            });
+                        return; // Async handled
+                    } else if (currentVerifyAlgo === 'scrypt') {
+                        if (typeof scrypt === 'undefined') throw new Error("Scrypt library not loaded");
+                        // Format: scrypt$N$r$p$saltHex$hashHex
+                        const parts = hash.split('$');
+                        if (parts.length !== 6 || parts[0] !== 'scrypt') {
+                            throw new Error('Invalid Scrypt hash format. Expected scrypt$N$r$p$salt$hash');
+                        }
+                        const N = parseInt(parts[1]);
+                        const r = parseInt(parts[2]);
+                        const p = parseInt(parts[3]);
+                        const salt = new Uint8Array(parts[4].match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+                        const hashHex = parts[5];
+
+                        scrypt.scrypt(new TextEncoder().encode(password), salt, N, r, p, 64)
+                            .then(derivedKey => {
+                                const computedHex = bufferToHex(derivedKey);
+                                resolve(computedHex === hashHex);
+                            })
+                            .catch(reject);
+                        return; // Async handled
+                    } else if (currentVerifyAlgo === 'pbkdf2') {
+                        if (typeof CryptoJS === 'undefined') throw new Error("CryptoJS library not loaded");
+                        // Format: pbkdf2$iterations$salt$hash
+                        const parts = hash.split('$');
+                        if (parts.length !== 4 || parts[0] !== 'pbkdf2') {
+                            throw new Error('Invalid PBKDF2 hash format. Expected pbkdf2$iterations$salt$hash');
+                        }
+                        const iterations = parseInt(parts[1]);
+                        const salt = CryptoJS.enc.Hex.parse(parts[2]);
+                        const hashHex = parts[3];
+                        const keySize = (hashHex.length * 4) / 32;
+
+                        const derivedKey = CryptoJS.PBKDF2(password, salt, {
+                            keySize: keySize,
+                            iterations: iterations
+                        });
+                        resolve(derivedKey.toString() === hashHex);
                     } else {
                         reject(new Error('Unsupported verification algorithm'));
                     }
@@ -356,7 +434,8 @@ document.addEventListener('DOMContentLoaded', () => {
     accordions.forEach(acc => {
         acc.addEventListener('click', () => {
             // Toggle active class
-            acc.classList.toggle('active');
+            const isActive = acc.classList.toggle('active');
+            acc.setAttribute('aria-expanded', isActive);
 
             // Toggle panel
             const panel = acc.nextElementSibling;
