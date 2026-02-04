@@ -51,6 +51,7 @@
                         <input type="text" id="passwordInput" placeholder="Enter text to hash..." autocomplete="off"
                             maxlength="128">
                     </div>
+                    <div class="hint">Press Enter to generate. Bcrypt uses the first 72 bytes of input.</div>
                 </div>
 
                 <div class="options-group">
@@ -146,7 +147,8 @@
                 <div class="input-group">
                     <label for="verifyHashInput">Hash to Check</label>
                     <div class="input-wrapper">
-                        <input type="text" id="verifyHashInput" placeholder="Paste the hash here..." autocomplete="off">
+                        <input type="text" id="verifyHashInput" placeholder="Paste the hash here..." autocomplete="off"
+                            maxlength="512">
                     </div>
                 </div>
 
@@ -165,8 +167,9 @@
                     <label for="verifyPasswordInput">Text to Check</label>
                     <div class="input-wrapper">
                         <input type="text" id="verifyPasswordInput" placeholder="Enter text to check..."
-                            autocomplete="off">
+                            autocomplete="off" maxlength="128">
                     </div>
+                    <div class="hint">Press Enter to verify. Bcrypt uses the first 72 bytes of input.</div>
                 </div>
 
                 <button id="verifyBtn" class="primary-btn">

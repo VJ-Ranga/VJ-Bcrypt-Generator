@@ -106,14 +106,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Rate Limiting
     let lastGenerateTime = 0;
+    let lastVerifyTime = 0;
     const COOLDOWN_MS = 500;
-    let generateController = null;
+    let lastGenerationId = 0;
 
     // Helper to get hex from Uint8Array
     function bufferToHex(buffer) {
         return Array.from(new Uint8Array(buffer))
             .map(b => b.toString(16).padStart(2, '0'))
             .join('');
+    }
+
+    function truncateToMaxBytes(input, maxBytes) {
+        const encoder = new TextEncoder();
+        let bytes = 0;
+        let result = '';
+
+        for (const ch of input) {
+            const encoded = encoder.encode(ch);
+            if (bytes + encoded.length > maxBytes) break;
+            bytes += encoded.length;
+            result += ch;
+        }
+
+        return {
+            value: result,
+            truncated: result.length !== input.length
+        };
     }
 
     // Generate Hash
@@ -142,15 +161,24 @@ document.addEventListener('DOMContentLoaded', () => {
         // Prevent spamming
         setLoading(generateBtn, true);
 
+        let effectivePassword = password;
+        if (currentAlgo === 'bcrypt') {
+            const limited = truncateToMaxBytes(password, 72);
+            effectivePassword = limited.value;
+            if (limited.truncated) {
+                passwordInput.value = effectivePassword;
+            }
+        }
+
         // Use a Promise to handle both Sync and Async algorithms
         const currentGenerationId = Date.now();
-        this.lastGenerationId = currentGenerationId;
+        lastGenerationId = currentGenerationId;
 
         new Promise((resolve, reject) => {
             // Small delay for UI "heaviness"
             setTimeout(() => {
                 // Check if this generation is still relevant
-                if (this.lastGenerationId !== currentGenerationId) return;
+                if (lastGenerationId !== currentGenerationId) return;
 
                 try {
                     if (currentAlgo === 'argon2id') {
@@ -218,7 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             case 'bcrypt':
                                 if (!bcryptLib) throw new Error("Bcrypt library not loaded");
                                 const salt = bcryptLib.genSaltSync(parseInt(roundsInput.value));
-                                hash = bcryptLib.hashSync(password, salt);
+                                hash = bcryptLib.hashSync(effectivePassword, salt);
                                 break;
                             case 'md5':
                                 if (typeof CryptoJS === 'undefined') throw new Error("CryptoJS library not loaded");
@@ -246,7 +274,7 @@ document.addEventListener('DOMContentLoaded', () => {
         })
             .then(hash => {
                 // Final check before updating DOM
-                if (this.lastGenerationId !== currentGenerationId) return;
+                if (lastGenerationId !== currentGenerationId) return;
                 hashOutput.value = hash;
                 outputGroup.classList.remove('hidden');
                 void outputGroup.offsetWidth; // Force Reflow
@@ -278,15 +306,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Enter Key Support for Verify Section
-    [verifyHashInput, verifyPasswordInput].forEach(input => {
-        input.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                verifyBtn.click();
-            }
-        });
-    });
-
     // --- Verify Section ---
     const verifyHashInput = document.getElementById('verifyHashInput');
     const verifyPasswordInput = document.getElementById('verifyPasswordInput');
@@ -310,9 +329,25 @@ document.addEventListener('DOMContentLoaded', () => {
         currentVerifyAlgo = chip.dataset.algo;
     });
 
+    // Enter Key Support for Verify Section
+    [verifyHashInput, verifyPasswordInput].forEach(input => {
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                verifyBtn.click();
+            }
+        });
+    });
+
     verifyBtn.addEventListener('click', () => {
+        const now = Date.now();
+        if (now - lastVerifyTime < COOLDOWN_MS) {
+            showStatus(verifyStatusMsg, 'Please wait a moment...', 'error');
+            return;
+        }
+        lastVerifyTime = now;
+
         const hash = verifyHashInput.value.trim();
-        const password = verifyPasswordInput.value.trim();
+        let password = verifyPasswordInput.value.trim();
 
         if (password !== verifyPasswordInput.value) {
             verifyPasswordInput.value = password;
@@ -324,6 +359,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         setLoading(verifyBtn, true);
+
+        if (currentVerifyAlgo === 'bcrypt') {
+            const limited = truncateToMaxBytes(password, 72);
+            password = limited.value;
+            if (limited.truncated) {
+                verifyPasswordInput.value = password;
+            }
+        }
 
         // Small delay for consistency
         new Promise((resolve, reject) => {
@@ -343,6 +386,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         const isMatch = bcryptLib.compareSync(password, hash);
                         resolve(isMatch);
                     } else if (currentVerifyAlgo === 'md5') {
+                        if (typeof CryptoJS === 'undefined') throw new Error("CryptoJS library not loaded");
                         // MD5 - 32 hex chars
                         if (!/^[a-f0-9]{32}$/i.test(hash)) {
                             reject(new Error('Invalid MD5 hash format. Expected 32 hexadecimal characters'));
@@ -351,6 +395,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         const computed = CryptoJS.MD5(password).toString();
                         resolve(computed.toLowerCase() === hash.toLowerCase());
                     } else if (currentVerifyAlgo === 'sha1') {
+                        if (typeof CryptoJS === 'undefined') throw new Error("CryptoJS library not loaded");
                         // SHA1 - 40 hex chars
                         if (!/^[a-f0-9]{40}$/i.test(hash)) {
                             reject(new Error('Invalid SHA1 hash format. Expected 40 hexadecimal characters'));
@@ -359,6 +404,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         const computed = CryptoJS.SHA1(password).toString();
                         resolve(computed.toLowerCase() === hash.toLowerCase());
                     } else if (currentVerifyAlgo === 'sha256') {
+                        if (typeof CryptoJS === 'undefined') throw new Error("CryptoJS library not loaded");
                         // SHA256 - 64 hex chars
                         if (!/^[a-f0-9]{64}$/i.test(hash)) {
                             reject(new Error('Invalid SHA256 hash format. Expected 64 hexadecimal characters'));
@@ -367,6 +413,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         const computed = CryptoJS.SHA256(password).toString();
                         resolve(computed.toLowerCase() === hash.toLowerCase());
                     } else if (currentVerifyAlgo === 'sha512') {
+                        if (typeof CryptoJS === 'undefined') throw new Error("CryptoJS library not loaded");
                         // SHA512 - 128 hex chars
                         if (!/^[a-f0-9]{128}$/i.test(hash)) {
                             reject(new Error('Invalid SHA512 hash format. Expected 128 hexadecimal characters'));
