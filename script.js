@@ -61,12 +61,15 @@ document.addEventListener('DOMContentLoaded', () => {
     generateBtn.addEventListener('click', () => {
         const password = passwordInput.value;
         if (!password) {
-            showStatus(statusMsg, 'Please enter a password', 'error');
+            showStatus(statusMsg, 'Please enter text to hash', 'error');
             return;
         }
 
+        // Prevent spamming
+        setLoading(generateBtn, true);
         outputGroup.classList.remove('visible'); // Reset animation
 
+        // Small delay to allow UI to update and feel "heavy"
         setTimeout(() => {
             let hash = '';
             try {
@@ -98,8 +101,10 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (err) {
                 console.error(err);
                 showStatus(statusMsg, 'Error generating hash', 'error');
+            } finally {
+                setLoading(generateBtn, false);
             }
-        }, 50);
+        }, 300); // 300ms aesthetic delay
     });
 
     // Copy to Clipboard
@@ -120,43 +125,45 @@ document.addEventListener('DOMContentLoaded', () => {
         const password = verifyPasswordInput.value;
 
         if (!hash || !password) {
-            showStatus(verifyStatusMsg, 'Please enter both hash and password', 'error');
+            showStatus(verifyStatusMsg, 'Please enter both hash and text', 'error');
             return;
         }
 
-        try {
-            let isMatch = false;
+        setLoading(verifyBtn, true);
 
-            // Auto-detect format basics
-            if (hash.startsWith('$2a$') || hash.startsWith('$2b$') || hash.startsWith('$2y$')) {
-                // Bcrypt
-                isMatch = dcodeIO.bcrypt.compareSync(password, hash);
-            } else {
-                // Simple comparison for plain hashes (MD5, SHA)
-                // We generate the candidate hash based on length or trial-and-error?
-                // Actually, since we can't easily guess the algo from just a hex string (MD5=32 chars, SHA256=64 chars), 
-                // we can try to hash the password with all supported algos and check if ANY match.
+        setTimeout(() => {
+            try {
+                let isMatch = false;
 
-                const candidates = [
-                    CryptoJS.MD5(password).toString(),
-                    CryptoJS.SHA1(password).toString(),
-                    CryptoJS.SHA256(password).toString(),
-                    CryptoJS.SHA512(password).toString()
-                ];
+                // Auto-detect format basics
+                if (hash.startsWith('$2a$') || hash.startsWith('$2b$') || hash.startsWith('$2y$')) {
+                    // Bcrypt
+                    isMatch = dcodeIO.bcrypt.compareSync(password, hash);
+                } else {
+                    // Simple comparison for plain hashes
+                    const candidates = [
+                        CryptoJS.MD5(password).toString(),
+                        CryptoJS.SHA1(password).toString(),
+                        CryptoJS.SHA256(password).toString(),
+                        CryptoJS.SHA512(password).toString()
+                    ];
 
-                isMatch = candidates.includes(hash.toLowerCase());
+                    isMatch = candidates.includes(hash.toLowerCase());
+                }
+
+                if (isMatch) {
+                    showStatus(verifyStatusMsg, 'Success! Text matches the hash.', 'success');
+                } else {
+                    showStatus(verifyStatusMsg, 'Failed! Text does not match.', 'error');
+                }
+
+            } catch (err) {
+                console.error(err);
+                showStatus(verifyStatusMsg, 'Invalid hash format or error', 'error');
+            } finally {
+                setLoading(verifyBtn, false);
             }
-
-            if (isMatch) {
-                showStatus(verifyStatusMsg, 'Success! Password matches the hash.', 'success');
-            } else {
-                showStatus(verifyStatusMsg, 'Failed! Password does not match.', 'error');
-            }
-
-        } catch (err) {
-            console.error(err);
-            showStatus(verifyStatusMsg, 'Invalid hash format or error', 'error');
-        }
+        }, 300);
     });
 
     // --- Accordion Logic ---
@@ -178,6 +185,24 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- Utils ---
+
+    function setLoading(btn, isLoading) {
+        if (isLoading) {
+            const originalText = btn.innerHTML;
+            btn.dataset.originalText = originalText;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
+            btn.disabled = true;
+            btn.style.opacity = '0.7';
+            btn.style.cursor = 'not-allowed';
+        } else {
+            if (btn.dataset.originalText) {
+                btn.innerHTML = btn.dataset.originalText;
+            }
+            btn.disabled = false;
+            btn.style.opacity = '1';
+            btn.style.cursor = 'pointer';
+        }
+    }
 
     function showStatus(element, msg, type) {
         element.textContent = msg;
