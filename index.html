@@ -105,98 +105,67 @@
         <section class="faq-container">
             <h2>FAQ & Algorithm Guide</h2>
             <div class="faq-accordion">
-                <!-- FAQ Item 1 -->
+                <!-- FAQ Item: What is this? -->
+                <div class="accordion-item">
+                    <button class="accordion-header">
+                        <span>What is VJ Bcrypt Generator?</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <div class="accordion-content">
+                        <p>It is a secure, client-side tool to generate and verify password hashes. Because it runs in
+                            your browser, your data never leaves your device.</p>
+                    </div>
+                </div>
+
+                <!-- FAQ Item: Which method to use? -->
                 <div class="accordion-item">
                     <button class="accordion-header">
                         <span>Which encryption method should I use?</span>
                         <i class="fa-solid fa-chevron-down"></i>
                     </button>
                     <div class="accordion-content">
-                        <p><strong>Bcrypt</strong> is the best choice for passwords. It is designed to be slow, which
-                            protects against brute-force attacks. For general file checking or data integrity, use
-                            <strong>SHA-256</strong>.
-                        </p>
+                        <p><strong>Bcrypt</strong> is the best for passwords because it is slow and hard to crack.
+                            <strong>SHA-256</strong> is good for checking file integrity.</p>
                     </div>
                 </div>
 
-                <!-- FAQ Item 2 -->
+                <!-- FAQ Item: What is Bcrypt? -->
                 <div class="accordion-item">
                     <button class="accordion-header">
-                        <span>Bcrypt (Recommended)</span>
+                        <span>What is Bcrypt?</span>
                         <i class="fa-solid fa-chevron-down"></i>
                     </button>
                     <div class="accordion-content">
-                        <p class="status-success"><i class="fa-solid fa-check-circle"></i> <strong>Good for:</strong>
-                            User Passwords</p>
-                        <p>Bcrypt is the industry standard for password hashing. It uses a "work factor" (rounds) to
-                            make hashing slow, preventing hackers from guessing billions of passwords per second.</p>
+                        <p class="status-success"><i class="fa-solid fa-check-circle"></i> <strong>Recommended for
+                                Passwords</strong></p>
+                        <p>Bcrypt is a password hashing function designed to be computationally intensive. It uses a
+                            "salt" and "rounds" to protect against brute-force attacks.</p>
                     </div>
                 </div>
 
-                <!-- FAQ Item 3 -->
-                <div class="accordion-item">
-                    <button class="accordion-header">
-                        <span>MD5 & SHA-1</span>
-                        <i class="fa-solid fa-chevron-down"></i>
-                    </button>
-                    <div class="accordion-content">
-                        <p class="status-error"><i class="fa-solid fa-triangle-exclamation"></i>
-                            <strong>Status:</strong> Broken / Insecure
-                        </p>
-                        <p>These are old algorithms. They are extremely fast, which is <strong>bad for
-                                passwords</strong> because hackers can crack them instantly. Only use them for checking
-                            if two files are identical (checksums).</p>
-                    </div>
-                </div>
-
-                <!-- FAQ Item 4 -->
-                <div class="accordion-item">
-                    <button class="accordion-header">
-                        <span>SHA-256 & SHA-512</span>
-                        <i class="fa-solid fa-chevron-down"></i>
-                    </button>
-                    <div class="accordion-content">
-                        <p class="status-success"><i class="fa-solid fa-check-circle"></i> <strong>Good for:</strong>
-                            Data Integrity / Digital Signatures</p>
-                        <p>These are secure standard algorithms but are designed to be <strong>fast</strong>. While
-                            better than MD5, they are still not ideal for passwords unless used with a salt and many
-                            iterations. For passwords, stick to Bcrypt.</p>
-                    </div>
-                </div>
-
-                <!-- FAQ Item: What is bcrypt? -->
-                <div class="accordion-item">
-                    <button class="accordion-header">
-                        <span>What is bcrypt?</span>
-                        <i class="fa-solid fa-chevron-down"></i>
-                    </button>
-                    <div class="accordion-content">
-                        <p>Bcrypt is a password hashing function designed to be computationally intensive. It's commonly
-                            used for securely storing passwords in databases.</p>
-                    </div>
-                </div>
-
-                <!-- FAQ Item: How many rounds? -->
+                <!-- FAQ Item: Rounds -->
                 <div class="accordion-item">
                     <button class="accordion-header">
                         <span>How many rounds should I use?</span>
                         <i class="fa-solid fa-chevron-down"></i>
                     </button>
                     <div class="accordion-content">
-                        <p>12 rounds is the recommended minimum for production use. More rounds increase security but
-                            also processing time. Choose based on your security requirements.</p>
+                        <p><strong>12 rounds</strong> is the recommended minimum for production. The higher the number,
+                            the more secure it is, but it will take longer to generate.</p>
                     </div>
                 </div>
 
-                <!-- FAQ Item: Is this secure? -->
+                <!-- FAQ Item: Insecure Algos -->
                 <div class="accordion-item">
                     <button class="accordion-header">
-                        <span>Is this tool secure?</span>
+                        <span>Are MD5 and SHA-1 secure?</span>
                         <i class="fa-solid fa-chevron-down"></i>
                     </button>
                     <div class="accordion-content">
-                        <p>All processing happens in your browser using the bcryptjs library. No data is sent to any
-                            servers or stored anywhere.</p>
+                        <p class="status-error"><i class="fa-solid fa-triangle-exclamation"></i> <strong>Broken /
+                                Insecure</strong></p>
+                        <p>No. They are too fast and can be cracked easily. Do not use them for passwords. Only use them
+                            for simple checksums.</p>
                     </div>
                 </div>
 
@@ -207,8 +176,8 @@
                         <i class="fa-solid fa-chevron-down"></i>
                     </button>
                     <div class="accordion-content">
-                        <p>This tool is primarily for testing and learning. For production use, implement bcrypt
-                            directly in your application using a trusted library.</p>
+                        <p>This tool is excellent for testing, learning, and manual generation. For your own app, you
+                            should use a trusted library to implement Bcrypt directly in your backend.</p>
                     </div>
                 </div>
             </div>
