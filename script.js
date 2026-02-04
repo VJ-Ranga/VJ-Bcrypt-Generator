@@ -139,6 +139,9 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        // Prevent spamming
+        setLoading(generateBtn, true);
+
         // Use a Promise to handle both Sync and Async algorithms
         const currentGenerationId = Date.now();
         this.lastGenerationId = currentGenerationId;
@@ -275,6 +278,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Enter Key Support for Verify Section
+    [verifyHashInput, verifyPasswordInput].forEach(input => {
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                verifyBtn.click();
+            }
+        });
+    });
+
     // --- Verify Section ---
     const verifyHashInput = document.getElementById('verifyHashInput');
     const verifyPasswordInput = document.getElementById('verifyPasswordInput');
@@ -300,7 +312,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     verifyBtn.addEventListener('click', () => {
         const hash = verifyHashInput.value.trim();
-        const password = verifyPasswordInput.value;
+        const password = verifyPasswordInput.value.trim();
+
+        if (password !== verifyPasswordInput.value) {
+            verifyPasswordInput.value = password;
+        }
 
         if (!hash || !password) {
             showStatus(verifyStatusMsg, 'Please enter both hash and text', 'error');
@@ -315,12 +331,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 try {
                     // Strict format checking based on selected algorithm
                     if (currentVerifyAlgo === 'bcrypt') {
+                        // Check for bcrypt specifically (might be dcodeIO.bcrypt or just bcrypt)
+                        const bcryptLib = (typeof dcodeIO !== 'undefined' && dcodeIO.bcrypt) || (typeof bcrypt !== 'undefined' ? bcrypt : null);
+                        if (!bcryptLib) throw new Error("Bcrypt library not loaded");
+
                         // Bcrypt Check - must start with $2
                         if (!hash.startsWith('$2a$') && !hash.startsWith('$2b$') && !hash.startsWith('$2y$')) {
                             reject(new Error('Invalid Bcrypt hash format. Expected hash starting with $2a$, $2b$, or $2y$'));
                             return;
                         }
-                        const isMatch = dcodeIO.bcrypt.compareSync(password, hash);
+                        const isMatch = bcryptLib.compareSync(password, hash);
                         resolve(isMatch);
                     } else if (currentVerifyAlgo === 'md5') {
                         // MD5 - 32 hex chars
