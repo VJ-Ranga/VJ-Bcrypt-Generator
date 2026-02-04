@@ -20,4 +20,5 @@ This started as a fun, personal project because I needed a quick way to generate
 3.  **Verify**: Switch to the verify tab, paste a hash and the text to check if they match.
 
 ## License
-Free to use and share!
+This project is licensed under the **MIT License**.
+Free to use and share! Check the `LICENSE` file for details.
