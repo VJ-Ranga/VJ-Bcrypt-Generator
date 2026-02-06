@@ -5,11 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VJ Bcrypt Generator | Premium Hash Generator</title>
-    <!-- Google Fonts: Inter & Outfit -->
+    <!-- Google Fonts: Fraunces & Space Grotesk -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;700;800&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
         rel="stylesheet">
     <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -22,6 +22,14 @@
     <script src="https://cdn.jsdelivr.net/npm/argon2-browser/dist/argon2-bundled.min.js"></script>
     <!-- Scrypt JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/scrypt-js/3.0.1/scrypt.min.js"></script>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-88JF4D11LY"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-88JF4D11LY');
+    </script>
     <!-- Google AdSense Code -->
     <!-- Paste your AdSense script here. It usually looks like:
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
@@ -207,8 +215,9 @@
                         <i class="fa-solid fa-chevron-down"></i>
                     </button>
                     <div id="faq2" class="accordion-content" role="region">
-                        <p><strong>Bcrypt</strong> is the best for passwords because it is slow and hard to crack.
-                            <strong>SHA-256</strong> is good for checking file integrity.
+                        <p><strong>Argon2id</strong>, <strong>Scrypt</strong>, and <strong>PBKDF2</strong> are modern
+                            choices for passwords. <strong>Bcrypt</strong> is still solid and widely supported.
+                            <strong>SHA-256</strong> is better suited for file integrity, not password storage.
                         </p>
                     </div>
                 </div>
@@ -234,8 +243,21 @@
                         <i class="fa-solid fa-chevron-down"></i>
                     </button>
                     <div id="faq4" class="accordion-content" role="region">
-                        <p><strong>12 rounds</strong> is the recommended minimum for production. The higher the number,
-                            the more secure it is, but it will take longer to generate.</p>
+                        <p><strong>12 rounds</strong> is a solid minimum for production. Higher is more secure but
+                            slower.
+                            For quick local testing, lower values are fine.</p>
+                    </div>
+                </div>
+
+                <!-- FAQ Item: Bcrypt Limit -->
+                <div class="accordion-item">
+                    <button class="accordion-header" aria-expanded="false" aria-controls="faq7" role="button">
+                        <span>Why does Bcrypt ignore long passwords?</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <div id="faq7" class="accordion-content" role="region">
+                        <p>Bcrypt only uses the first <strong>72 bytes</strong> of the input. Longer inputs are
+                            truncated, which is why this tool trims for Bcrypt only.</p>
                     </div>
                 </div>
 
@@ -270,9 +292,6 @@
             <!-- Copy your manual display ad code inside the div below -->
             <!-- <div class="ad-container"></div> -->
 
-            <!-- SAFE AD SPOT 3: Won't break layout -->
-            <!-- Copy your manual display ad code inside the div below -->
-            <!-- <div class="ad-container"></div> -->
 
             <footer>
                 <p>&copy; 2026 VJ Bcrypt Generator. Designed by <a href="https://vjranga.com" target="_blank"

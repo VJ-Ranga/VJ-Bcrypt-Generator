@@ -1,14 +1,17 @@
 :root {
-    --bg-dark: #050505;
-    --card-bg: #111111;
-    --card-border: #222222;
-    --text-primary: #ffffff;
-    --text-secondary: #888888;
-    --accent-color: #ffffff;
-    --chip-bg: #1a1a1a;
-    --chip-border: #333333;
-    --font-heading: 'Outfit', sans-serif;
-    --font-body: 'Inter', sans-serif;
+    color-scheme: dark;
+    --ink: #f6f2ee;
+    --ink-soft: #c8bdb3;
+    --paper: #0b0b0b;
+    --cream: #151310;
+    --surface: #1b1714;
+    --surface-alt: #221c18;
+    --accent: #e27d39;
+    --accent-dark: #f3b079;
+    --line: #2d2621;
+    --shadow: rgba(0, 0, 0, 0.5);
+    --font-heading: 'Fraunces', serif;
+    --font-body: 'Space Grotesk', sans-serif;
 }
 
 * {
@@ -18,30 +21,47 @@
 }
 
 body {
-    background-color: var(--bg-dark);
-    color: var(--text-primary);
+    background: radial-gradient(1200px 800px at 10% -10%, rgba(226, 125, 57, 0.18) 0%, transparent 60%),
+        radial-gradient(1200px 800px at 110% 10%, rgba(243, 176, 121, 0.12) 0%, transparent 60%),
+        var(--paper);
+    color: var(--ink);
     font-family: var(--font-body);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 80px 20px 40px;
+    padding: 48px 24px 80px;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+    background-size: 18px 18px;
+    opacity: 0.25;
+    pointer-events: none;
+    z-index: 0;
 }
 
 /* Layout Container */
 .container {
     width: 100%;
-    max-width: 700px;
+    max-width: 1100px;
     /* Increased width for FAQ grid */
+    position: relative;
+    z-index: 1;
 }
 
 /* Minimal Card */
 .glass-card {
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 24px;
-    padding: 40px;
+    background: var(--cream);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 20px 22px;
     margin-bottom: 60px;
+    box-shadow: 0 24px 50px -30px var(--shadow);
+    animation: rise 0.8s ease;
 }
 
 header {
@@ -51,15 +71,15 @@ header {
 
 header h1 {
     font-family: var(--font-heading);
-    font-size: 2rem;
+    font-size: 2.3rem;
     font-weight: 700;
-    color: var(--text-primary);
+    color: var(--ink);
     margin-bottom: 8px;
 }
 
 header p {
-    color: var(--text-secondary);
-    font-size: 1rem;
+    color: var(--ink-soft);
+    font-size: 1.02rem;
     line-height: 1.5;
 }
 
@@ -68,19 +88,19 @@ header p {
     display: flex;
     gap: 10px;
     margin-bottom: 30px;
-    background: var(--chip-bg);
+    background: var(--surface);
     padding: 6px;
-    border-radius: 12px;
+    border-radius: 999px;
     width: fit-content;
-    border: 1px solid var(--chip-border);
+    border: 1px solid var(--line);
 }
 
 .tab-btn {
     background: transparent;
     border: none;
-    color: var(--text-secondary);
-    padding: 10px 24px;
-    border-radius: 8px;
+    color: var(--ink-soft);
+    padding: 10px 22px;
+    border-radius: 999px;
     cursor: pointer;
     font-family: var(--font-body);
     font-weight: 600;
@@ -88,12 +108,12 @@ header p {
 }
 
 .tab-btn:hover {
-    color: var(--text-primary);
+    color: var(--ink);
 }
 
 .tab-btn.active {
-    background: var(--text-primary);
-    color: var(--bg-dark);
+    background: var(--accent);
+    color: var(--paper);
 }
 
 /* Sections */
@@ -102,7 +122,7 @@ header p {
 }
 
 .content-section {
-    animation: fadeIn 0.3s ease;
+    animation: rise 0.8s ease;
 }
 
 .input-group,
@@ -115,14 +135,14 @@ label {
     display: block;
     font-size: 0.9rem;
     font-weight: 600;
-    color: var(--text-primary);
+    color: var(--ink);
     margin-bottom: 10px;
 }
 
 .hint {
     margin-top: 8px;
     font-size: 0.8rem;
-    color: var(--text-secondary);
+    color: var(--ink-soft);
 }
 
 /* Inputs */
@@ -136,11 +156,11 @@ input[type="text"],
 input[type="password"] {
     width: 100%;
     padding: 16px 20px;
-    background: var(--bg-dark);
-    border: 1px solid var(--card-border);
-    border-radius: 12px;
-    color: var(--text-primary);
-    font-family: 'Inter', sans-serif;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    color: var(--ink);
+    font-family: var(--font-body);
     font-size: 1rem;
     outline: none;
     transition: border-color 0.2s;
@@ -148,12 +168,12 @@ input[type="password"] {
 
 input[type="text"]::placeholder,
 input[type="password"]::placeholder {
-    color: #444;
+    color: var(--ink-soft);
 }
 
 input[type="text"]:focus,
 input[type="password"]:focus {
-    border-color: #555;
+    border-color: var(--accent);
 }
 
 .icon-btn {
@@ -161,9 +181,9 @@ input[type="password"]:focus {
     right: 8px;
     top: 50%;
     transform: translateY(-50%);
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid transparent;
-    color: var(--text-primary);
+    background: var(--surface-alt);
+    border: 1px solid var(--line);
+    color: var(--ink);
     cursor: pointer;
     padding: 8px 12px;
     border-radius: 8px;
@@ -172,8 +192,8 @@ input[type="password"]:focus {
 }
 
 .icon-btn:hover {
-    background: var(--text-primary);
-    color: var(--bg-dark);
+    background: var(--accent-dark);
+    color: var(--paper);
 }
 
 /* Chips */
@@ -184,9 +204,9 @@ input[type="password"]:focus {
 }
 
 .chip {
-    background: var(--chip-bg);
-    border: 1px solid var(--chip-border);
-    color: var(--text-secondary);
+    background: var(--surface-alt);
+    border: 1px solid var(--line);
+    color: var(--ink-soft);
     padding: 8px 18px;
     border-radius: 50px;
     cursor: pointer;
@@ -197,22 +217,22 @@ input[type="password"]:focus {
 }
 
 .chip:hover {
-    background: #222;
-    color: var(--text-primary);
-    border-color: #444;
+    background: var(--surface);
+    color: var(--ink);
+    border-color: var(--accent-dark);
 }
 
 .chip.active {
-    background: var(--text-primary);
-    color: var(--bg-dark);
-    border-color: var(--text-primary);
+    background: var(--accent);
+    color: var(--paper);
+    border-color: var(--accent);
 }
 
 .bcrypt-options {
     margin-bottom: 24px;
-    padding: 20px;
-    background: var(--bg-dark);
-    border: 1px solid var(--card-border);
+    padding: 20px 22px;
+    background: var(--surface);
+    border: 1px solid var(--line);
     border-radius: 12px;
 }
 
@@ -222,9 +242,9 @@ input[type="password"]:focus {
 
 .argon2-options {
     margin-bottom: 24px;
-    padding: 20px;
-    background: var(--bg-dark);
-    border: 1px solid var(--card-border);
+    padding: 20px 22px;
+    background: var(--surface);
+    border: 1px solid var(--line);
     border-radius: 12px;
 }
 
@@ -235,9 +255,9 @@ input[type="password"]:focus {
 .scrypt-options,
 .pbkdf2-options {
     margin-bottom: 24px;
-    padding: 20px;
-    background: var(--bg-dark);
-    border: 1px solid var(--card-border);
+    padding: 20px 22px;
+    background: var(--surface);
+    border: 1px solid var(--line);
     border-radius: 12px;
 }
 
@@ -249,16 +269,16 @@ input[type="password"]:focus {
 select {
     width: 100%;
     padding: 16px 44px 16px 20px;
-    background: var(--bg-dark);
-    border: 1px solid var(--card-border);
+    background: var(--surface);
+    border: 1px solid var(--line);
     border-radius: 12px;
-    color: var(--text-primary);
+    color: var(--ink);
     font-family: var(--font-body);
     font-size: 1rem;
     outline: none;
     cursor: pointer;
     appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23f6f2ee'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 16px center;
     background-size: 16px;
@@ -266,19 +286,19 @@ select {
 }
 
 select:focus {
-    border-color: #555;
+    border-color: var(--accent);
 }
 
 select option {
-    background: var(--card-bg);
-    color: var(--text-primary);
+    background: var(--surface);
+    color: var(--ink);
     padding: 10px;
 }
 
 input[type="range"] {
     width: 100%;
     height: 4px;
-    background: #333;
+    background: var(--line);
     border-radius: 2px;
     outline: none;
     -webkit-appearance: none;
@@ -289,15 +309,15 @@ input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
     width: 16px;
     height: 16px;
-    background: var(--text-primary);
-    border: 2px solid var(--bg-dark);
+    background: var(--accent);
+    border: 2px solid var(--paper);
     border-radius: 50%;
     cursor: pointer;
 }
 
 input[type="range"]::-moz-range-track {
     height: 4px;
-    background: #333;
+    background: var(--line);
     border: none;
     border-radius: 2px;
 }
@@ -305,8 +325,8 @@ input[type="range"]::-moz-range-track {
 input[type="range"]::-moz-range-thumb {
     width: 16px;
     height: 16px;
-    background: var(--text-primary);
-    border: 2px solid var(--bg-dark);
+    background: var(--accent);
+    border: 2px solid var(--paper);
     border-radius: 50%;
     cursor: pointer;
 }
@@ -316,9 +336,9 @@ input[type="range"]::-moz-range-thumb {
     width: 100%;
     padding: 16px;
     border: none;
-    border-radius: 12px;
-    background: var(--text-primary);
-    color: var(--bg-dark);
+    border-radius: 999px;
+    background: var(--accent);
+    color: var(--paper);
     font-family: var(--font-body);
     font-weight: 700;
     font-size: 1rem;
@@ -331,7 +351,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .primary-btn:hover {
-    opacity: 0.9;
+    opacity: 0.92;
 }
 
 .primary-btn:active {
@@ -342,7 +362,7 @@ input[type="range"]::-moz-range-thumb {
 .output-group {
     margin-top: 30px;
     padding-top: 30px;
-    border-top: 1px solid var(--card-border);
+    border-top: 1px solid var(--line);
 }
 
 .output-group.hidden {
@@ -356,7 +376,7 @@ input[type="range"]::-moz-range-thumb {
 
 #hashOutput {
     font-family: 'MonoLisa', 'Fira Code', monospace;
-    color: #bbb;
+    color: var(--ink-soft);
 }
 
 .status-msg {
@@ -369,19 +389,19 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .status-error {
-    color: #fb7185;
+    color: #f87171;
     opacity: 1;
 }
 
 .status-success {
-    color: #10b981;
+    color: #22c55e;
     opacity: 1;
 }
 
-@keyframes fadeIn {
+@keyframes rise {
     from {
         opacity: 0;
-        transform: translateY(5px);
+        transform: translateY(12px);
     }
 
     to {
@@ -399,7 +419,7 @@ input[type="range"]::-moz-range-thumb {
     font-family: var(--font-heading);
     font-size: 1.5rem;
     margin-bottom: 24px;
-    border-left: 4px solid var(--text-primary);
+    border-left: 4px solid var(--accent);
     padding-left: 16px;
 }
 
@@ -412,8 +432,8 @@ input[type="range"]::-moz-range-thumb {
 
 /* Accordion */
 .accordion-item {
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
+    background: var(--surface);
+    border: 1px solid var(--line);
     border-radius: 12px;
     /* Removed margin-bottom since gap handles it */
     overflow: hidden;
@@ -437,11 +457,11 @@ input[type="range"]::-moz-range-thumb {
     font-family: var(--font-body);
     font-size: 1rem;
     font-weight: 600;
-    color: var(--text-primary);
+    color: var(--ink);
 }
 
 .accordion-header i {
-    color: var(--text-secondary);
+    color: var(--ink-soft);
     transition: transform 0.3s ease;
 }
 
@@ -453,16 +473,16 @@ input[type="range"]::-moz-range-thumb {
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.3s ease;
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--surface-alt);
 }
 
 .accordion-content p {
     padding: 20px;
     margin: 0;
-    color: var(--text-secondary);
+    color: var(--ink-soft);
     font-size: 0.95rem;
     line-height: 1.6;
-    border-top: 1px solid var(--card-border);
+    border-top: 1px solid var(--line);
 }
 
 .accordion-content .status-success {
@@ -492,9 +512,9 @@ input[type="range"]::-moz-range-thumb {
     display: flex;
     justify-content: center;
     align-items: center;
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--surface);
     /* Subtle placeholder bg */
-    border: 1px solid var(--card-border);
+    border: 1px solid var(--line);
     border-radius: 12px;
     overflow: hidden;
 }
@@ -502,17 +522,17 @@ input[type="range"]::-moz-range-thumb {
 footer {
     margin-top: 40px;
     text-align: center;
-    color: #444;
+    color: var(--ink-soft);
     font-size: 0.85rem;
 }
 
 @media (max-width: 600px) {
     .glass-card {
-        padding: 24px;
+        padding: 20px 18px;
     }
 
     header h1 {
-        font-size: 1.75rem;
+        font-size: 1.9rem;
     }
 }
 
