@@ -69,6 +69,15 @@ header {
     text-align: left;
 }
 
+.eyebrow {
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent-dark);
+    margin-bottom: 10px;
+}
+
 header h1 {
     font-family: var(--font-heading);
     font-size: 2.3rem;
@@ -519,11 +528,23 @@ input[type="range"]::-moz-range-thumb {
     overflow: hidden;
 }
 
-footer {
+.footer {
     margin-top: 40px;
     text-align: center;
     color: var(--ink-soft);
     font-size: 0.85rem;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.footer a {
+    color: var(--accent);
+    text-decoration: underline;
+}
+
+.footer a:hover {
+    color: var(--accent-dark);
 }
 
 @media (max-width: 600px) {
